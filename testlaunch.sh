@@ -12,8 +12,8 @@ usage() { echo "Use [-t] <location of test data> note: data should be split by c
       echo "Use [-u] <filetype of test data> e.g. bfile, pfile, vcf, bgen, etc."; \
       echo "Use [-l] <location of ld reference for summary statistics>  note: data should be split by chromosome, chromosome number should be the last part of the filename and left off the location aong with the filetype"; \
       echo "Use [-m] <filetype of ld reference for summary statistics> e.g. bfile, pfile, vcf, bgen, etc."; \
-      echo "Use [-s] <location of summary statistics> note: file should have a header with columns: SNP A1 A2 freq b se p N"; \
-      echo "Use [-g] <location of genetic risk scores> note: file should have no header with columns: chromosome rsid position A1 A2 beta"; \
+      echo "Use [-s] <location of summary statistics> note: file should be genome-wide and have a header with columns: SNP A1 A2 freq b se p N"; \
+      echo "Use [-g] <location of genetic risk scores> note: file should be genoome-wide and have no header with columns: chromosome rsid position A1 A2 beta"; \
       echo "Use [-p] <location of plink environment module> note: this should be what you enter after entering $ module load"; \
       echo "Use [-r] <location of R environment module> note: this should be what you enter after entering $ module load"; \
       echo "Use [-o] <name of output>"; \
