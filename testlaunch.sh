@@ -1,13 +1,26 @@
 #!/bin/bash
-    echo "                   _ "
-    echo "    |\ |\         | | "
-    echo "   .. || |____  _ | | ___  ___ "
-    echo " o--  \| |  _ \/ || |/ _ \/ _ \ "
-    echo "  v__    | | )( (_| ( (_|( (_| | "
-    echo "     \___| ||_/\____|\___/\__  | "
-    echo "         | |              ___| | "
-    echo "         |_|     v1.0    (_____| "
-    echo ""
+echo "                      _ "
+echo "       |\ |\         | | "
+echo "      .. || |____  _ | | ___  ___ "
+echo "    o--  \| |  _ \/ || |/ _ \/ _ \ "
+echo "     v__    | | )( (_| ( (_|( (_| | "
+echo "        \___| ||_/\____|\___/\__  | "
+echo "            | |              ___| | "
+echo "            |_|     v1.0    (_____| "
+echo ""
+
+
+echo "        _   _          _ "
+echo "       | | | |        | | "
+echo "    __@  |_| |____  _ | | ___  ___ "
+echo "   O         |  _ \/ || |/ _ \/ _ \ "
+echo "    \_____)  | | )( (_| ( (_|( (_| | "
+echo "     U   \___| ||_/\____|\___/\__  | "
+echo "             | |              ___| | "
+echo "             |_|     v1.0    (_____| "
+echo ""
+
+
 usage() { echo "Use [-t] <location of test data> note: data should be split by chromosome, chromosome number should be the last part of the filename and left off the location along with the file type"; \
       echo "Use [-u] <filetype of test data> e.g. bfile, pfile, vcf, bgen, etc."; \
       echo "Use [-l] <location of ld reference for summary statistics>  note: data should be split by chromosome, chromosome number should be the last part of the filename and left off the location aong with the filetype"; \
