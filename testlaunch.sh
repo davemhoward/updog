@@ -1,12 +1,12 @@
 #!/bin/bash
-    echo "   _   _          _ "
-    echo "  | | | |        | | "
-    echo "  | | | |____  _ | | ___  ___ "
-    echo "  | | | |  _ \/ || |/ _ \/ _ \ "
-    echo "  | |_| | | )( (_| ( (_|( (_| | "
-    echo "  \_____| ||_/\____|\___/\__  | "
-    echo "        | |              ___| | "
-    echo "        |_|     v1.0    (_____| "
+    echo "                   _ "
+    echo "    |\ |\         | | "
+    echo "   .. || |____  _ | | ___  ___ "
+    echo " o--  || |  _ \/ || |/ _ \/ _ \ "
+    echo "  v_  \| | | )( (_| ( (_|( (_| | "
+    echo "    \____| ||_/\____|\___/\__  | "
+    echo "         | |              ___| | "
+    echo "         |_|     v1.0    (_____| "
     echo ""
 usage() { echo "Use [-t] <location of test data> note: data should be split by chromosome, chromosome number should be the last part of the filename and left off the location along with the file type"; \
       echo "Use [-u] <filetype of test data> e.g. bfile, pfile, vcf, bgen, etc."; \
