@@ -252,36 +252,65 @@ fi
 
 for i in {22..22}
 do
-  awk -v chr=$i '($1 == chr)' ${scores} | sort -k2 -n > temp/${outname}_scores_chr"$i".txt ## extract the polygenic risk scores for each chromosome
-  if [ $(cat ${scores} | wc -l) -gt 100000 ]  ## if genome-wide scoring is available for 100k+ variant then split into 1000 variant clumps else split by genome size
-  then
-    split -l1000 -d -a 3 --numeric=1 temp/${outname}_scores_chr"$i".txt temp/${outname}_chunkscores_chr"$i"_ ## split the risk scores in to clumps of 1000 variants
+  outfilescores=temp/scores_${outname}_chr"$i".txt
+  outfilechunkscores=temp/chunkscores_${outname}_chr"$i"_
+  awk -v chr=$i '($1 == chr)' ${scores} | sort -k2 -n > $outfilescores ## extract the polygenic risk scores for each chromosome
+  if [ $(cat ${scores} | wc -l) -gt 100000 ]; then  ## if genome-wide scoring is available for 100k+ variant then split into 1000 variant clumps else split by genome size
+    split -l1000 -d -a 3 --numeric=1 $outfilescores $outfilechunkscores ## split the risk scores in to clumps of 1000 variants
   else
-    awk '($2 < 30000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_001
-    awk '($2 >= 30000000 && $2 < 60000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_002
-    awk '($2 >= 60000000 && $2 < 90000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_003
-    awk '($2 >= 90000000 && $2 < 120000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_004
-    awk '($2 >= 120000000 && $2 < 150000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_005
-    awk '($2 >= 150000000 && $2 < 180000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_006
-    awk '($2 >= 180000000 && $2 < 210000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_007
-    awk '($2 >= 210000000 && $2 < 240000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_008
-    awk '($2 >= 240000000)' temp/${outname}_scores_chr"$i".txt > temp/${outname}_chunkscores_chr"$i"_009
-    cd temp
-    find . -name "${outname}_chunkscores_chr"$i"_*" -empty -delete ## removes empty chunks
-    cd ..
+    count=0
+    if [ $(awk '($2 < 30000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 < 30000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 30000000 && $2 < 60000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 30000000 && $2 < 60000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 60000000 && $2 < 90000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 60000000 && $2 < 90000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 90000000 && $2 < 120000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 90000000 && $2 < 120000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 120000000 && $2 < 150000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 120000000 && $2 < 150000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 150000000 && $2 < 180000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 150000000 && $2 < 180000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 180000000 && $2 < 210000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 180000000 && $2 < 210000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 210000000 && $2 < 240000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 210000000 && $2 < 240000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
+    if [ $(awk '($2 >= 240000000)' $outfilescores | wc -l) -gt 0 ]; then
+      count=$((count+1))
+      awk '($2 >= 240000000)' $outfilescores > "$outfilechunkscores"00"$count"
+    fi
   fi
 
-  #qsub -t 2-2 -l h_rt=4:00:00 -N updog_chr"$i" ./updog.sh "$i"  ## test run of the first chunk
-#  qsub -t 1-$(ls chunkscores_chr"$i"_* | wc -l) -l h_rt=4:00:00 -N updog_chr"$i" ./updog.sh "$i" ## submit each clump on each chromosome as a job running ./updog.sh
+#  if [ $(cat temp/${outname}_scores_chr"$i".txt | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
+#    qsub -t 1-2 -l h_rt=0:10:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh "$i" "$testloc" "$testtype" "$ldloc" "$ldtype" \
+#    "$sumstats" "$scores" "$plinkloc" "$rloc" "$outname" ## test run of the first chunk
+#  qsub -t 1-$(ls chunkscores_chr"$i"_* | wc -l) -l h_rt=4:00:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh "$i" ## submit each clump on each chromosome as a job running ./updog.sh
+#  fi
 done
 
 
-echo $testloc
-echo $testtype
-echo $ldloc
-echo $ldtype
-echo $sumstats
-echo $scores
-echo $plinkloc
-echo $rloc
-echo $outname
+#echo $testloc
+#echo $testtype
+#echo $ldloc
+#echo $ldtype
+#echo $sumstats
+#echo $scores
+#echo $plinkloc
+#echo $rloc
+#echo $outname
