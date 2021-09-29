@@ -4,7 +4,7 @@ echo "       | | | |        | | "
 echo "    __@@ |_| |____  _ | | ___  ___ "
 echo "   O         |  _ \/ || |/ _ \/ _ \ "
 echo "    \_____)  | | )( (_| ( (_|( (_| | "
-echo "     U  \____| ||_/\____|\___/\__  | "
+echo "     U  \___/| ||_/\____|\___/\__  | "
 echo "             | |              ___| | "
 echo "             |_|     v1.0    (_____| "
 echo ""
@@ -209,7 +209,7 @@ if [ ${ldtype} == "vcf" ]; then
 fi
 echo ""
 
-if [  -e $(eval echo ${sumstats}) ]; then
+if [ -e $(eval echo ${sumstats}) ]; then
   echo "  Summary statistics found for $(cat ${sumstats} | tail -n +2 | wc -l) variants"
 else
   echo "  Summary statistics not found when looking for ${sumstats}"
@@ -250,7 +250,7 @@ then
   mkdir logs
 fi
 
-for i in {22..22}
+for i in {20..22}
 do
   outfilescores=temp/scores_${outname}_chr"$i".txt
   outfilechunkscores=temp/chunkscores_${outname}_chr"$i"_
@@ -297,10 +297,11 @@ do
     fi
   fi
 
-#  if [ $(cat temp/${outname}_scores_chr"$i".txt | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
-#    qsub -t 1-2 -l h_rt=0:10:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh "$i" "$testloc" "$testtype" "$ldloc" "$ldtype" \
-#    "$sumstats" "$scores" "$plinkloc" "$rloc" "$outname" ## test run of the first chunk
-#  qsub -t 1-$(ls chunkscores_chr"$i"_* | wc -l) -l h_rt=4:00:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh "$i" ## submit each clump on each chromosome as a job running ./updog.sh
+  arguments="$i $testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname"
+
+#  if [ $(cat ${outfilescores} | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
+#   qsub -t 1-1 -l h_rt=0:10:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} ## test run of the first chunk
+#    qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} 
 #  fi
 done
 
