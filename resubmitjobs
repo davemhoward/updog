@@ -1,0 +1,5 @@
+qsub -t 1- -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr -cwd ./updog.sh args go here 
+qsub -t 1- -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr -cwd ./updog.sh args go here 
+qsub -t 1- -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr -cwd ./updog.sh args go here 
+qsub -t 1- -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr -cwd ./updog.sh args go here 
+qsub -t 1- -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr -cwd ./updog.sh args go here 
