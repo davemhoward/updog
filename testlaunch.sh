@@ -23,7 +23,7 @@ usage() {
   echo "  -t [location of test data]"; \
   echo "     Data should be split by chromosome. Chromosome number should be the last"; \
   echo "     part of the filename prefix and omitted along with the file type. So if the"; \
-  echo "     full filename was UK_biobank_chr1.vcf then supply -t UK_biobank_chr" ; \
+  echo "     full filename was UK_biobank_chr1.vcf then supply -t UK_biobank_chr"; \
   echo "  -u [filetype of test data]"; \
   echo "     e.g. -u bfile, -u pfile, or -u vcf"; \
   echo "  -l <location of ld reference data for summary statistics>"; \
@@ -32,15 +32,17 @@ usage() {
   echo "     full file name was 1000g_eur_chr1.vcf then type -t 1000g_eur_chr"; \
   echo "  -m <filetype of ld reference for summary statistics>"; \
   echo "     e.g. -m bfile, -m pfile, or -m vcf"; \
-  echo "  -s <location of summary statistics>"; \
+  echo "  -s <location of summary statistics> {optional flag -n}"; \
   echo "     File should be genome-wide, space separated, with a header row. The first 4"; \
-  echo "     columns must contain SNP Name, A1 allele, A2 allele, Effect Size. The header"; \
-  echo "     row is ignored along with any additional columns"; \
-  echo "  -g <location of genetic scores>"; \
+  echo "     columns must contain SNP Name, A1 allele, A2 allele, Effect Size. The -n"; \
+  echo "     flag indicates that effect sizes are odds ratios else beta coefficients are"; \
+  echo "     assumed. The header row is ignored along with any additional columns."; \
+  echo "  -g <location of genetic scores> {optional flag -i}"; \
   echo "     File should be genome-wide, space separated, with a header row. The first 6"; \
   echo "     columns must contain chromosome number, basepair position, SNP Name, A1"; \
-  echo "     allele, A2 allele, Genetic Score. The header row is ignored along with any"; \
-  echo "     addtional columns"; \
+  echo "     allele, A2 allele, Genetic Score. The -i flag indicates that genetic scores"; \
+  echo "     are odds ratios else beta coefficients are assumed. The header row is"; \
+  echo "     ignored along with any addtional columns"; \
   echo "  -p <location of plink environment module>"; \
   echo "     i.e. what you enter after entering module load on the command line"; \
   echo "  -r <location of R environment module>"; \
@@ -48,7 +50,10 @@ usage() {
   echo "     Use R version ≥ 3.0.2"; \
   echo "  -o <name for output>"; }
 
-while getopts ":ht:l:s:r:u:m:o:p:g:" opt; do
+sumstatsOR=0
+scoresOR=0
+
+while getopts ":hnit:l:s:r:u:m:o:p:g:" opt; do
   case ${opt} in
     h)
       usage
@@ -69,8 +74,14 @@ while getopts ":ht:l:s:r:u:m:o:p:g:" opt; do
     s) # process option s
       sumstats=$OPTARG
       ;;
+    n) # process option n
+      sumstatsOR=1
+      ;;
     g) # process option g
       scores=$OPTARG
+      ;;
+    i) # process option i
+      scoresOR=1
       ;;
     p) # process option p
       plinkloc=$OPTARG
@@ -210,7 +221,10 @@ fi
 echo ""
 
 if [ -e $(eval echo ${sumstats}) ]; then
-  echo "  Summary statistics found for $(cat ${sumstats} | tail -n +2 | wc -l) variants"
+  echo "  Summary statistics found for $(cat ${sumstats} | tail -n +2 | wc -l) variants with a mean effect size of $(awk '{ total += $4 } END { print total/NR }' $sumstats)"
+  if [ "$sumstatsOR" -eq 1 ]; then
+    echo "  Odds ratio flag detected for effect sizes - converting by taking the natural log"
+  fi
 else
   echo "  Summary statistics not found when looking for ${sumstats}"
   exit 1
@@ -218,7 +232,10 @@ fi
 echo ""
 
 if [  -e $(eval echo ${scores}) ]; then
-  echo "  Genetic scores found for $(cat ${scores} | tail -n +2 | wc -l) variants"
+  echo "  Genetic scores found for $(cat ${scores} | tail -n +2 | wc -l) variants with a mean genetic score of $(awk '{ total += $6 } END { print total/NR }' $scores)"
+  if [ "$scoresOR" -eq 1 ]; then
+    echo "  Odds ratio flag detected for genetic scores - converting by taking the natural log"
+  fi
 else
   echo "  Genetic scores not found when looking for ${scores}"
   exit 1
@@ -240,6 +257,7 @@ fi
 
 echo ""
 echo "  Initial checks complete. Moving on to chunking and job submission."
+echo ""
 
 if [ ! -d "temp" ] 
 then
@@ -250,11 +268,15 @@ then
   mkdir logs
 fi
 
-for i in {20..22}
+for i in {22..22}
 do
   outfilescores=temp/scores_${outname}_chr"$i".txt
   outfilechunkscores=temp/chunkscores_${outname}_chr"$i"_
+  if [ "$scoresOR" -eq 1 ]; then  ## if scores are OR then convert using log(OR)
+  awk -v chr=$i '($1 == chr)' ${scores} | sort -k2 -n | awk '{print $1,$2,$3,$4,$5,log($6)}' > $outfilescores ## extract the polygenic risk scores for each chromosome
+  else
   awk -v chr=$i '($1 == chr)' ${scores} | sort -k2 -n > $outfilescores ## extract the polygenic risk scores for each chromosome
+  fi
   if [ $(cat ${scores} | wc -l) -gt 100000 ]; then  ## if genome-wide scoring is available for 100k+ variant then split into 1000 variant clumps else split by genome size
     split -l1000 -d -a 3 --numeric=1 $outfilescores $outfilechunkscores ## split the risk scores in to clumps of 1000 variants
   else
@@ -297,21 +319,12 @@ do
     fi
   fi
 
-  arguments="$i $testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname"
+  arguments="$i $testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
 
-#  if [ $(cat ${outfilescores} | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
+  if [ $(cat ${outfilescores} | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
 #   qsub -t 1-1 -l h_rt=0:10:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} ## test run of the first chunk
-#    qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} 
-#  fi
+    qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} 
+  fi
 done
-
-
-#echo $testloc
-#echo $testtype
-#echo $ldloc
-#echo $ldtype
-#echo $sumstats
-#echo $scores
-#echo $plinkloc
-#echo $rloc
-#echo $outname
+echo ""
+echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."
