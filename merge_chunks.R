@@ -1,15 +1,15 @@
-args <- commandArgs(trailingOnly = TRUE)
+# supplied arguments: $1=$testloc, $2=$testtype, $3=$ldloc, $4=$ldtype
+# $5=$sumstats, $6=$scores, $7=$plinkloc, $8=$rloc, $9=$outname, $10=sumstatsOR
 
-name <- args[1]
+args <- commandArgs(trailingOnly = TRUE)
+name <- args[9]
+
+outargs<-paste(args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10])
 
 setwd("temp")
-
 chunkname<-paste0("chunkscores_",name,"_chr*")
 chunkfiles <- list.files(pattern=chunkname)
 scores<-paste0(gsub("chunkscores", "scoreoutput", chunkfiles),".txt")
-
-## sapply(strsplit(sapply(strsplit(scores[n], "_chr"), "[[" , 2), "_"), "[[" , 1) ## this captures the missing chromosome from scores
-## as.numeric(substr(scores[n],nchar(scores[n])-6,nchar(scores[n])-4)) ## this captures the missing chunk from scores
 
 p<-0
 for (n in 1:(length(chunkfiles))) {
@@ -17,18 +17,23 @@ for (n in 1:(length(chunkfiles))) {
     p<-p+1
     cat(paste0(  scores[n]," is missing \n"))
     if (p == 1) {
-      sink("../resubmitjobs",append=FALSE)
+      sink(paste0("../resubmitjobs_",name),append=FALSE)
     } else {
-      sink("../resubmitjobs",append=TRUE)
+      sink(paste0("../resubmitjobs_",name),append=TRUE)
     }
-    cat("qsub -t 1- -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog -cwd ./updog.sh args go here \n")
+    chr<-sapply(strsplit(sapply(strsplit(scores[n], "_chr"), "[[" , 2), "_"), "[[" , 1)
+    chunk<-as.numeric(substr(scores[n],nchar(scores[n])-6,nchar(scores[n])-4))
+    cat(paste0("qsub -t ",chunk,"-",chunk," -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=32G -N updog_resubmit -cwd ./updog.sh ",chr," ",outargs,"\n"))
     sink()
   }
 }
 
 if (p >= 1) {
-  ## add additional job to the resubmitjobs file that reruns this merge at the end
-  stop("To rerun missing chunks type ./resubmitjobs on the command line") ## COULD CREATE A -z flag for testlaunch to just rerun the merge afterwards
+  sink(paste0("../resubmitjobs_",name),append=TRUE)
+  cat(paste0("qsub -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid updog_resubmit ./merge_chunks.sh ",outargs,"\n"))
+  sink()
+  cat(paste0("  To rerun missing chunk(s) and attempt a remerge type ./resubmitjobs_",name," on the command line\n"))
+  stop(paste0("  To rerun missing chunk(s) and attempt a remerge type ./resubmitjobs_",name," on the command line\n"))
 }
 
 set1<-read.table(scores[1],header=T,sep="")
@@ -39,5 +44,4 @@ for (i in 2:(length(scores))){
 }
 
 setwd("..")   
-ADD NAME TO OUTPUT
-write.table(set1,"scoreoutput_genomewide.txt",quote=F,col.names=T,row.names=F)
+write.table(set1,paste0("genomewidescores_",name,".txt"),quote=F,col.names=T,row.names=F)

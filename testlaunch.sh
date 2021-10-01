@@ -268,7 +268,7 @@ then
   mkdir logs
 fi
 
-for i in {22..22}
+for i in {1..22}
 do
   outfilescores=temp/scores_${outname}_chr"$i".txt
   outfilechunkscores=temp/chunkscores_${outname}_chr"$i"_
@@ -326,5 +326,14 @@ do
     qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} 
   fi
 done
+
+mergearguments="$testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
+qsub -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.sh ${mergearguments}
+
 echo ""
 echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."
+echo "  There will either be a results file called genomewidescores_${outname}.txt or a file"
+echo "  called resubmitjobs_${outname} if any chunks failed to run. If the resubmitjobs file"
+echo "  is there, just enter ./resubmitjobs_${outname} on the command line and go and make"
+echo "  another coffee."
+echo ""
