@@ -31,15 +31,24 @@ UPDOGSUMSCORE1b<-0
 UPDOGSUMSCORE1c<-0
 UPDOGSUMSCORE1d<-0
 UPDOGSUMSCORE1e<-0
-riskscoredown<-structure(1:(nrow(geno)), names=rownames(geno))
-riskscoreup<-structure(1:(nrow(geno)), names=rownames(geno))
 UPDOGSUMSCORE2a<-0
 UPDOGSUMSCORE2b<-0
 UPDOGSUMSCORE2c<-0
 UPDOGSUMSCORE2d<-0
 UPDOGSUMSCORE2e<-0
+riskscoredown<-structure(1:(nrow(geno)), names=rownames(geno))
+riskscoreup<-structure(1:(nrow(geno)), names=rownames(geno))
 riskscoredown2<-structure(1:(nrow(geno)), names=rownames(geno))
 riskscoreup2<-structure(1:(nrow(geno)), names=rownames(geno))
+riskscore3<-structure(1:(nrow(geno)), names=rownames(geno))
+UPDOGSUMSCORE3<-structure(1:(nrow(geno)), names=rownames(geno))
+riskscoredown<-0
+riskscoreup<-0
+riskscoredown2<-0
+riskscoreup2<-0
+riskscore3<-0
+UPDOGSUMSCORE3<-0
+
 for (n in 1:(nrow(scores))) {
 
   rs<-scores$V3[n]
@@ -50,16 +59,19 @@ for (n in 1:(nrow(scores))) {
   ## get risk score for lead variant
   beta<-scores[n,"V6"]
   ## check whether A1 allele in test data matches scores A1
-  if (bim[which(bim$V2==rs),"V5"]==scores[n,"V4"]) {
+    if (bim[which(bim$V2==rs),"V5"]==scores[n,"V4"] && bim[which(bim$V2==rs),"V6"]==scores[n,"V5"]) {
+    leadeffect<-geno[,which(bim$V2==rs)] ## Use effect as is
     riskscore<-geno[,which(bim$V2==rs)]*beta ## Use beta as is
-  } else if (bim[which(bim$V2==rs),"V6"]==scores[n,"V4"]) { ## test A2 in test matches scores A1 
+  } else if (bim[which(bim$V2==rs),"V6"]==scores[n,"V4"] && bim[which(bim$V2==rs),"V5"]==scores[n,"V5"]) { ## test A2 in test matches scores A1 
+    leadeffect<-(geno[,which(bim$V2==rs)]*-1+2) ## invert alleles
     riskscore<-(geno[,which(bim$V2==rs)]*-1+2)*beta ## invert beta
   } else { ## no match between test and scores. all individuals set to 0
+    leadeffect[1:(nrow(geno))]<-0
     riskscore[1:(nrow(geno))]<-0
   }
   ## set missing individual genotype calls to have mean riskscore in population
   riskscore[is.na(geno[,which(bim$V2==rs)])]<-mean(riskscore,na.rm=T)
-
+  
   ## based on rs find closest upstream and downstream variant within ld (0.5 to 0.75) that also exists in test data and sumstats
   pos<-which(ldbim$V2==rs)
   if (length(pos) == 0) { ## checks lead variant available in ld data set, if not adds to running total and moves on to next variant
@@ -172,6 +184,94 @@ for (n in 1:(nrow(scores))) {
   riskscoredown2[is.na(geno[,which(bim$V2==rs)])]<-0
   riskscoreup2[is.na(geno[,which(bim$V2==rs)])]<-0
 
+  if (mean(riskscore,na.rm=T) > 0) {  ## if lead is causal
+    if (ild > 0 && sumstats[which(sumstats$V1==ldbim[i,2]),"V2"] == bim[which(bim$V2==ldbim[i,2]),"V5"] && sumstats[which(sumstats$V1==ldbim[i,2]),"V3"] == bim[which(bim$V2==ldbim[i,2]),"V6"]) {
+      if (sumstats[which(sumstats$V1==ldbim[i,2]),"V4"] > 0) {
+        downeffect<-geno[,which(bim$V2==ldbim[i,2])]
+      } else {
+        downeffect<-(geno[,which(bim$V2==ldbim[i,2])]*-1+2) ## invert alleles
+      }
+    } else if (ild > 0 && sumstats[which(sumstats$V1==ldbim[i,2]),"V2"] == bim[which(bim$V2==ldbim[i,2]),"V6"] && sumstats[which(sumstats$V1==ldbim[i,2]),"V3"] == bim[which(bim$V2==ldbim[i,2]),"V5"]) {
+      if (sumstats[which(sumstats$V1==ldbim[i,2]),"V4"] > 0) {
+        downeffect<-(geno[,which(bim$V2==ldbim[i,2])]*-1+2) ## invert alleles
+      } else {
+        downeffect<-geno[,which(bim$V2==ldbim[i,2])]
+      }
+    } else { ## if no downstream allele or no allelic match between sumstats and test data assume downstream matches lead
+      downeffect<-leadeffect
+    }
+    if (jld > 0 && sumstats[which(sumstats$V1==ldbim[j,2]),"V2"] == bim[which(bim$V2==ldbim[j,2]),"V5"] && sumstats[which(sumstats$V1==ldbim[j,2]),"V3"] == bim[which(bim$V2==ldbim[j,2]),"V6"]) {
+      if (sumstats[which(sumstats$V1==ldbim[j,2]),"V4"] > 0) {
+        upeffect<-geno[,which(bim$V2==ldbim[j,2])]
+      } else {
+        upeffect<-(geno[,which(bim$V2==ldbim[j,2])]*-1+2) ## invert alleles
+      }
+    } else if (jld > 0 && sumstats[which(sumstats$V1==ldbim[j,2]),"V2"] == bim[which(bim$V2==ldbim[j,2]),"V6"] && sumstats[which(sumstats$V1==ldbim[j,2]),"V3"] == bim[which(bim$V2==ldbim[j,2]),"V5"]) {
+      if (sumstats[which(sumstats$V1==ldbim[j,2]),"V4"] > 0) {
+        upeffect<-(geno[,which(bim$V2==ldbim[j,2])]*-1+2) ## invert alleles
+      } else {
+        upeffect<-geno[,which(bim$V2==ldbim[j,2])]
+      }
+    } else { ## if no upstream allele or no allelic match between sumstats and test data assume upstream matches lead
+      upeffect<-leadeffect
+    }
+  }
+
+  if (mean(riskscore,na.rm=T) < 0) {  ## if lead is protective
+    if (ild > 0 && sumstats[which(sumstats$V1==ldbim[i,2]),"V2"] == bim[which(bim$V2==ldbim[i,2]),"V5"] && sumstats[which(sumstats$V1==ldbim[i,2]),"V3"] == bim[which(bim$V2==ldbim[i,2]),"V6"]) {
+      if (sumstats[which(sumstats$V1==ldbim[i,2]),"V4"] > 0) {
+        downeffect<-(geno[,which(bim$V2==ldbim[i,2])]*-1+2) ## invert alleles
+      } else {
+        downeffect<-geno[,which(bim$V2==ldbim[i,2])]
+      }
+    } else if (ild > 0 && sumstats[which(sumstats$V1==ldbim[i,2]),"V2"] == bim[which(bim$V2==ldbim[i,2]),"V6"] && sumstats[which(sumstats$V1==ldbim[i,2]),"V3"] == bim[which(bim$V2==ldbim[i,2]),"V5"]) {
+      if (sumstats[which(sumstats$V1==ldbim[i,2]),"V4"] > 0) {
+        downeffect<-geno[,which(bim$V2==ldbim[i,2])]
+      } else {
+        downeffect<-(geno[,which(bim$V2==ldbim[i,2])]*-1+2) ## invert alleles
+      }
+    } else { ## if no downstream allele or no allelic match between sumstats and test data assume downstream matches lead
+      downeffect<-leadeffect
+    }
+    if (jld > 0 && sumstats[which(sumstats$V1==ldbim[j,2]),"V2"] == bim[which(bim$V2==ldbim[j,2]),"V5"] && sumstats[which(sumstats$V1==ldbim[j,2]),"V3"] == bim[which(bim$V2==ldbim[j,2]),"V6"]) {
+      if (sumstats[which(sumstats$V1==ldbim[j,2]),"V4"] > 0) {
+        upeffect<-(geno[,which(bim$V2==ldbim[j,2])]*-1+2) ## invert alleles
+      } else {
+        upeffect<-geno[,which(bim$V2==ldbim[j,2])]
+      }
+    } else if (jld > 0 && sumstats[which(sumstats$V1==ldbim[j,2]),"V2"] == bim[which(bim$V2==ldbim[j,2]),"V6"] && sumstats[which(sumstats$V1==ldbim[j,2]),"V3"] == bim[which(bim$V2==ldbim[j,2]),"V5"]) {
+      if (sumstats[which(sumstats$V1==ldbim[j,2]),"V4"] > 0) {
+        upeffect<-geno[,which(bim$V2==ldbim[j,2])]
+      } else {
+        upeffect<-(geno[,which(bim$V2==ldbim[j,2])]*-1+2) ## invert alleles
+      }
+    } else { ## if no upstream allele or no allelic match between sumstats and test data assume upstream matches lead
+      upeffect<-leadeffect
+    }
+  }
+
+  riskscore3[which(is.na(leadeffect))]<-mean(riskscore) ## lead effect missing set as mean
+  riskscore3[which(downeffect==0 & leadeffect==0 & upeffect ==0)]<-0 ## down, lead and up all carry 0 effect
+  riskscore3[which(is.na(downeffect) & leadeffect==0 & upeffect ==0)]<-0  ## down missing, lead and up carry 0 effect
+  riskscore3[which(downeffect==0 & leadeffect==0 & is.na(upeffect))]<-0  ## up missing, lead and down carry 0 effect
+  riskscore3[which(is.na(downeffect) & leadeffect==0 & is.na(upeffect))]<-0 ## up and down missing, lead carry 0 effect
+  riskscore3[which(leadeffect==0 & (downeffect > 0 | upeffect > 0))]<-mean(riskscore) ## lead carries 0 effect, but either up or down doesn't so set to mean
+  riskscore3[which(downeffect > 0 & leadeffect==1 & upeffect > 0)]<-beta ## lead carries 1 effect and both up and down also carry 1 effect
+  riskscore3[which(is.na(downeffect)& leadeffect==1 & upeffect > 0)]<-beta ## down missing, lead carries 1 and up carries at least 1 
+  riskscore3[which(downeffect > 0 & leadeffect==1 & is.na(upeffect))]<-beta ## up missing, lead carries 1 and down carries at least 1
+  riskscore3[which(is.na(downeffect) & leadeffect==1 & is.na(upeffect))]<-beta ## lead carries 1 and both up and down missing
+  riskscore3[which(leadeffect==1 & (downeffect == 0 | upeffect == 0))]<-mean(riskscore) ## lead carries 1 and either down or up carries 0 so set to mean
+  riskscore3[which(leadeffect==2 & (downeffect == 0 | upeffect == 0))]<-mean(riskscore) ## lead carries 2 and either down or carries 0 so set to mean
+  riskscore3[which(leadeffect==2 & (downeffect > 0 & upeffect > 0))]<-beta ## lead carries 2 and either up or down carries at least 1 so set to beta. this will be increased to 2beta if appropriate in subsequent lines 
+  riskscore3[which(is.na(downeffect) & leadeffect==2 & upeffect ==0)]<-mean(riskscore) ## lead carries 2, down missing, up carries 0 so set to mean
+  riskscore3[which(is.na(downeffect) & leadeffect==2 & upeffect ==1)]<-beta ## lead carries 2, down missing, up carries 1 so set to beta
+  riskscore3[which(is.na(downeffect) & leadeffect==2 & upeffect ==2)]<-2*beta ## lead and up carry 2, down missing, set to 2beta
+  riskscore3[which(downeffect == 0 & leadeffect==2 & is.na(upeffect))]<-mean(riskscore) ## lead carries 2, up missing, down carries 0 so set to mean
+  riskscore3[which(downeffect == 1 & leadeffect==2 & is.na(upeffect))]<-beta ## lead carries 2, up missing, down carries 1 so set to beta
+  riskscore3[which(downeffect == 2 & leadeffect==2 & is.na(upeffect))]<-2*beta ## lead carries 2, up missing, down carries 2 so set to 2beta
+  riskscore3[which(is.na(downeffect) & leadeffect==2 & is.na(upeffect))]<-2*beta ## lead carries 2, up and down missing, set to 2beta
+  riskscore3[which(downeffect==2 & leadeffect==2 & upeffect ==2)]<-2*beta ## lead, down and up carry 2, set to 2beta
+  
   ## running tally of original risk score and updog riskscore
   ORIGINALSUMSCORE<-ORIGINALSUMSCORE+riskscore
   UPDOGSUMSCORE1a<-UPDOGSUMSCORE1a+riskscore+0.025*(riskscoredown+riskscoreup)
@@ -184,10 +284,11 @@ for (n in 1:(nrow(scores))) {
   UPDOGSUMSCORE2c<-UPDOGSUMSCORE2c+riskscore+0.125*(riskscoredown2+riskscoreup2)
   UPDOGSUMSCORE2d<-UPDOGSUMSCORE2d+riskscore+0.25*(riskscoredown2+riskscoreup2)
   UPDOGSUMSCORE2e<-UPDOGSUMSCORE2e+riskscore+0.5*(riskscoredown2+riskscoreup2)
+  UPDOGSUMSCORE3<-UPDOGSUMSCORE3+riskscore3
 
 }
 
-output<-cbind(fam[,c(1,2,6)],ORIGINALSUMSCORE,UPDOGSUMSCORE1a,UPDOGSUMSCORE1b,UPDOGSUMSCORE1c,UPDOGSUMSCORE1d,UPDOGSUMSCORE1e,UPDOGSUMSCORE2a,UPDOGSUMSCORE2b,UPDOGSUMSCORE2c,UPDOGSUMSCORE2d,UPDOGSUMSCORE2e)
+output<-cbind(fam[,c(1,2,6)],ORIGINALSUMSCORE,UPDOGSUMSCORE1a,UPDOGSUMSCORE1b,UPDOGSUMSCORE1c,UPDOGSUMSCORE1d,UPDOGSUMSCORE1e,UPDOGSUMSCORE2a,UPDOGSUMSCORE2b,UPDOGSUMSCORE2c,UPDOGSUMSCORE2d,UPDOGSUMSCORE2e,UPDOGSUMSCORE3)
 colnames(output)[1:3]<-c("FID","ID","PHENO")
 
 ## write out risk score
