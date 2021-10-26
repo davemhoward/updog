@@ -17,11 +17,11 @@ h2l_R2N <- function(k, r2n, p) {
   e <- 1 - p^(2 * p) * (1 - p)^(2 * (1 - p))
   h2l_R2N <- cc * e * r2n / (1 + cc * e * theta * r2n)
 }
-actual <- read.table("scoreoutput_genomewide.txt",header=T,sep="") ## CURRENTLY NO HEADER BUT WILL LIKELY CHANGE
-phenotype<-read.table("BroadDepressionPhenotypeforMeta.txt",header=F,sep="")
+actual <- read.table("genomewide_pT.txt",header=T,sep="") ## CURRENTLY NO HEADER BUT WILL LIKELY CHANGE
+phenotype<-read.table("~/eddie/PRSmapping/updog/BroadDepressionPhenotypeforMeta.txt",header=F,sep="")
 combi<-merge(actual,phenotype,by.x="ID",by.y="V1")
 
-pcs<-readRDS("../updog/ukb_sqc_qc_WhiteBritishPCs_addPrunedRels_noPGC_noGenScot_v2.covars.rds")
+pcs<-readRDS("~/eddie/PRSmapping/updog/ukb_sqc_qc_WhiteBritishPCs_addPrunedRels_noPGC_noGenScot_v2.covars.rds")
 
 ri<-merge(combi[which(combi$V3!=-9),],pcs,by.x="ID",by.y="f.eid")
 colnames(ri)<-toupper(colnames(ri))
@@ -36,7 +36,7 @@ NCO<-sum(ri$PHENO1==0)
 
 K <- 0.353 ## broad depression across whole UKB
 
-for (i in 4:14) {
+for (i in 4:15) {
 
 ri$SCORE<-ri[,i]
         

@@ -42,7 +42,7 @@ usage() {
   echo "     columns must contain chromosome number, basepair position, SNP Name, A1"; \
   echo "     allele, A2 allele, Genetic Score. The -i flag indicates that genetic scores"; \
   echo "     are odds ratios else beta coefficients are assumed. The header row is"; \
-  echo "     ignored along with any addtional columns"; \
+  echo "     ignored along with any additional columns"; \
   echo "  -p <location of plink environment module>"; \
   echo "     i.e. what you enter after entering module load on the command line"; \
   echo "  -r <location of R environment module>"; \
@@ -139,6 +139,13 @@ if [ -z "${testloc}" ] || [ -z "${ldloc}" ] || [ -z "${sumstats}" ] || \
   exit 1
 fi
 
+if [ ! -e $(eval echo genomewide_${outname}.txt) ]; then
+  echo ""
+  echo "  Output already found for genomewide_${outname}.txt"
+  echo "  Either delete, move or rename genomewide_${outname}.txt and resubmit."
+  echo ""
+  exit 1
+fi
 
 echo "  Examining test data:"; \
 echo "  ${testloc}*${testtype}"; \
