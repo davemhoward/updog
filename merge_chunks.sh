@@ -9,6 +9,16 @@ module load "$8"
 ## pass to merge_chunks.R
 Rscript merge_chunks.R ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9} ${10}
 
-if [ -e resubmitjobs_${9} ]; then
-  chmod 700 resubmitjobs
+## if resubmitjobs file created then update to allow execute
+if [ -e $(eval echo  resubmitjobs_${9}) ]; then
+  chmod 700 resubmitjobs_${9}
+fi
+
+## if genomewide scores created then remove chunked files
+if [ -e $(eval echo genomewidescores_${9}.txt) ]; then
+  rm chunkscores_${9}_chr*
+  rm ldref_${9}_chr*
+  rm scoreoutput_${9}_chr*
+  rm sumstats_${9}_chr*
+  rm testdata_${9}_chr*
 fi
