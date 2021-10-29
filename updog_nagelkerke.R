@@ -17,7 +17,7 @@ h2l_R2N <- function(k, r2n, p) {
   e <- 1 - p^(2 * p) * (1 - p)^(2 * (1 - p))
   h2l_R2N <- cc * e * r2n / (1 + cc * e * theta * r2n)
 }
-actual <- read.table("genomewide_pT.txt",header=T,sep="") ## CURRENTLY NO HEADER BUT WILL LIKELY CHANGE
+actual <- read.table("genomewidescores_pT.txt",header=T,sep="") ## CURRENTLY NO HEADER BUT WILL LIKELY CHANGE
 phenotype<-read.table("~/eddie/PRSmapping/updog/BroadDepressionPhenotypeforMeta.txt",header=F,sep="")
 combi<-merge(actual,phenotype,by.x="ID",by.y="V1")
 

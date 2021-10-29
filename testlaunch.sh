@@ -139,10 +139,10 @@ if [ -z "${testloc}" ] || [ -z "${ldloc}" ] || [ -z "${sumstats}" ] || \
   exit 1
 fi
 
-if [ ! -e $(eval echo genomewide_${outname}.txt) ]; then
+if [ -e $(eval echo genomewidescores_${outname}.txt) ]; then
   echo ""
-  echo "  Output already found for genomewide_${outname}.txt"
-  echo "  Either delete, move or rename genomewide_${outname}.txt and resubmit."
+  echo "  Output already found for genomewidescores_${outname}.txt"
+  echo "  Either delete, move or rename genomewidescores_${outname}.txt and resubmit."
   echo ""
   exit 1
 fi
@@ -335,12 +335,12 @@ do
 done
 
 mergearguments="$testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
-qsub -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.sh ${mergearguments}
+qsub -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.sh ${mergearguments}
 
 echo ""
 echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."
-echo "  There will either be a results file called genomewidescores_${outname}.txt or a file"
-echo "  called resubmitjobs_${outname} if any chunks failed to run. If the resubmitjobs file"
-echo "  is there, just enter ./resubmitjobs_${outname} on the command line and go and make"
-echo "  another coffee."
+echo "  There will either be a results file called genomewidescores_${outname}.txt or if any"
+echo "  chunks failed to run there will be a file called resubmitjobs_${outname}. If the"
+echo "  resubmitjobs file is there, just enter ./resubmitjobs_${outname} on the command line"
+echo "  and go and make another coffee."
 echo ""
