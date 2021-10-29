@@ -55,11 +55,13 @@ for (n in 1:(nrow(scores))) {
   if (length(which(bim$V2==rs)) == 0) { ## checks lead variant in prs available in test data set, if not skips to next variant
   next
   }
-
-  ## get risk score for lead variant
-  beta<-scores[n,"V6"]
-  ## check whether A1 allele in test data matches scores A1
-    if (bim[which(bim$V2==rs),"V5"]==scores[n,"V4"] && bim[which(bim$V2==rs),"V6"]==scores[n,"V5"]) {
+  if (scores$V6[n] == 0) { ## if beta is zero skip to next variant
+  next
+  } else {
+  beta<-scores$V6[n]
+  }
+  ## check whether A1 allele in test data matches scores A1 and A2 matches A2
+  if (bim[which(bim$V2==rs),"V5"]==scores[n,"V4"] && bim[which(bim$V2==rs),"V6"]==scores[n,"V5"]) {
     leadeffect<-geno[,which(bim$V2==rs)] ## Use effect as is
     riskscore<-geno[,which(bim$V2==rs)]*beta ## Use beta as is
   } else if (bim[which(bim$V2==rs),"V6"]==scores[n,"V4"] && bim[which(bim$V2==rs),"V5"]==scores[n,"V5"]) { ## test A2 in test matches scores A1 
