@@ -16,9 +16,9 @@ fi
 
 ## if genomewide scores created then remove chunked files
 if [ -e $(eval echo genomewidescores_${9}.txt) ]; then
-  rm chunkscores_${9}_chr*
-  rm ldref_${9}_chr*
-  rm scoreoutput_${9}_chr*
-  rm sumstats_${9}_chr*
-  rm testdata_${9}_chr*
+  rm temp/chunkscores_${9}_chr*
+  rm temp/ldref_${9}_chr*
+  rm temp/scoreoutput_${9}_chr*
+  rm temp/sumstats_${9}_chr*
+  rm temp/testdata_${9}_chr*
 fi
