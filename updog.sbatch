@@ -19,7 +19,9 @@ usage() {
   echo "     from passing the summary statistics file to packages such as PRS-CS or GCTB,"; \
   echo "     or by using P-value thresholding and clumping)"; \
   echo ""; \
-  echo "  To run updog type ./updog and supply the following flags and arguments."; \
+  echo "  To run updog type ./updog.qsub or ./updog.sbatch depending on your local job"; \
+  echo "  scheduler and supply the following flags and arguments."; \
+  echo ""; \
   echo "  -t [location of test data]"; \
   echo "     Data should be split by chromosome. Chromosome number should be the last"; \
   echo "     part of the filename prefix and omitted along with the file type. So if the"; \
@@ -329,13 +331,15 @@ do
   arguments="$i $testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
 
   if [ $(cat ${outfilescores} | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
-#   qsub -t 1-1 -l h_rt=0:10:00 -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} ## test run of the first chunk
-    qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./updog.sh ${arguments} 
+#    qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./chunk.qsub.sh ${arguments} 
+    sbatch -array 1-$(ls "$outfilechunkscores"* | wc -l) -t=0-4:00 -o logs/ -e logs/ -mem=4G --job-name=updog_chr"$i" -partition shared,brc ./chunk.qsub.sh ${arguments} 
   fi
 done
 
 mergearguments="$testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
-qsub -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.sh ${mergearguments}
+## qsub -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.qsub.sh ${mergearguments}
+sbatch -t=8:00:00 -o logs/ -e logs/ -mem=8G --job-name=merge_chunks -depend="updog_chr*" ./merge_chunks.qsub.sh ${mergearguments}
+
 
 echo ""
 echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."

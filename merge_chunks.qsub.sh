@@ -3,7 +3,6 @@
 # supplied arguments: $1=$testloc, $2=$testtype, $3=$ldloc, $4=$ldtype
 # $5=$sumstats, $6=$scores, $7=$plinkloc, $8=$rloc, $9=$outname, $10=sumstatsOR
 
-. /etc/profile.d/modules.sh
 module load "$8"
 
 ## pass to merge_chunks.R
