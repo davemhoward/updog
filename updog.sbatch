@@ -277,7 +277,7 @@ then
   mkdir logs
 fi
 
-for i in {22..22}
+for i in {1..22}
 do
   outfilescores=temp/scores_${outname}_chr"$i".txt
   outfilechunkscores=temp/chunkscores_${outname}_chr"$i"_
@@ -328,19 +328,12 @@ do
     fi
   fi
 
-#  arguments="$i $testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
-
   if [ $(cat ${outfilescores} | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
-#    qsub -t 1-$(ls "$outfilechunkscores"* | wc -l) -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=16G -N updog_chr"$i" -cwd ./chunk.qsub.sh ${arguments} 
-#    sbatch --array=1-$(ls "$outfilechunkscores"* | wc -l) --time=0-4:00:00 -o logs/ -e logs/ --mem=4G --job-name=updog_chr"$i" --partition=shared,brc ./chunk.sbatch.sh --export=${arguments} 
-#    sbatch --array=1-$(ls "$outfilechunkscores"* | wc -l) --time=0-4:00:00 -o logs/ -e logs/ --mem=4G --job-name=updog_chr"$i" --partition=shared,brc --export=i=$i,testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR ./test.sh 
-    sbatch --time=0-0:10:00 -o logs/ -e logs/ --mem=4G --job-name=updog_chr"$i" --partition=shared,brc ./test.sh
+    sbatch --array=1-$(ls "$outfilechunkscores"* | wc -l) --time=0-4:00:00 --output=logs/chunk.$outname.chr$i.%a.txt --mem=4G --job-name=chunk_$outname --partition=shared,brc --export=i=$i,testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR ./chunk.sbatch.sh
   fi
 done
 
-mergearguments="$testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
-## qsub -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.qsub.sh ${mergearguments}
-#sbatch --time=0-8:00:00 -o logs/ -e logs/ --mem=8G --job-name=merge_chunks --partition=shared,brc --depend="updog_chr*" ./merge_chunks.sbatch.sh ${mergearguments}
+sbatch --time=0-8:00:00 --output=logs/merge_chunks.$outname.txt --mem=8G --job-name=chunk_$outname --partition=shared,brc --dependency=singleton --export=testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR ./merge_chunks.sbatch.sh
 
 echo ""
 echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."
