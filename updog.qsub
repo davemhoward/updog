@@ -336,7 +336,7 @@ do
 done
 
 mergearguments="$testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR"
-qsub -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.qsub.sh ${mergearguments}
+qsub -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid "updog_chr*" ./merge_chunks.sh ${mergearguments}
 
 echo ""
 echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."

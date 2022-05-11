@@ -55,11 +55,14 @@ usage() {
 sumstatsOR=0
 scoresOR=0
 
-while getopts ":hnit:l:s:r:u:m:o:p:g:" opt; do
+while getopts ":ha:nit:l:s:r:u:m:o:p:g:" opt; do
   case ${opt} in
     h)
       usage
       exit 0
+      ;;
+    a) # process option a
+      jobargs=$OPTARG
       ;;
     t) # process option t
       testloc=$OPTARG
@@ -103,7 +106,6 @@ while getopts ":hnit:l:s:r:u:m:o:p:g:" opt; do
   esac
 done
 shift $((OPTIND -1))
-
 
 if [ -z "${testloc}" ] || [ -z "${ldloc}" ] || [ -z "${sumstats}" ] || \
  [ -z "${scores}" ] || [ -z "${testtype}" ] || [ -z "${ldtype}" ] || \
@@ -329,11 +331,11 @@ do
   fi
 
   if [ $(cat ${outfilescores} | wc -l) -gt 0 ]; then  ## only submit for chromosomes with variants
-    sbatch --array=1-$(ls "$outfilechunkscores"* | wc -l) --time=0-4:00:00 --output=logs/chunk.$outname.chr$i.%a.txt --mem=4G --job-name=chunk_$outname --partition=shared,brc --export=i=$i,testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR ./chunk.sbatch.sh
+    sbatch --array=1-$(ls "$outfilechunkscores"* | wc -l) --time=0-4:00:00 --output=logs/chunk.$outname.chr$i.%a.txt --mem=4G --job-name=chunk_$outname ${jobargs} --export=i=$i,testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR ./chunk.sbatch.sh
   fi
 done
 
-sbatch --time=0-8:00:00 --output=logs/merge_chunks.$outname.txt --mem=8G --job-name=chunk_$outname --partition=shared,brc --dependency=singleton --export=testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR ./merge_chunks.sbatch.sh
+sbatch --time=0-8:00:00 --output=logs/merge_chunks.$outname.txt --mem=8G --job-name=chunk_$outname ${jobargs} --dependency=singleton --export=testloc=$testloc,testtype=$testtype,ldloc=$ldloc,ldtype=$ldtype,sumstats=$sumstats,scores=$scores,plinkloc=$plinkloc,rloc=$rloc,outname=$outname,sumstatsOR=$sumstatsOR,jobargs=$jobargs ./merge_chunks.sh
 
 echo ""
 echo "  That's everything submitted. Go and get yourself a coffee and check back in a while."

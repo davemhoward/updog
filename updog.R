@@ -13,10 +13,12 @@ geno<-BEDMatrix(paste0("temp/testdata_",name,"_chr",chr,"_",sprintf("%03d",chunk
 bim<-read.table(paste0("temp/testdata_",name,"_chr",chr,"_",sprintf("%03d",chunk),".bim"),header=F,sep="")
 fam<-read.table(paste0("temp/testdata_",name,"_chr",chr,"_",sprintf("%03d",chunk),".fam"),header=F,sep="")
 
-## Pull in chunked ld files
-ld<-BEDMatrix(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk)))
-ldbim<-read.table(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk),".bim"),header=F,sep="",stringsAsFactors=F)
-ldbim$ld<-0
+## Pull in chunked ld files if available
+if(isTRUE(file.exists(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk),".bed")))) {
+  ld<-BEDMatrix(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk)))
+  ldbim<-read.table(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk),".bim"),header=F,sep="",stringsAsFactors=F)
+  ldbim$ld<-0
+}
 window<-250000 ## set window to 250kb
 
 ## Pull in chunked summary statistics
@@ -75,7 +77,23 @@ for (n in 1:(nrow(scores))) {
   riskscore[is.na(geno[,which(bim$V2==rs)])]<-mean(riskscore,na.rm=T)
   
   ## based on rs find closest upstream and downstream variant within ld (0.5 to 0.75) that also exists in test data and sumstats
-  pos<-which(ldbim$V2==rs)
+
+  if(isTRUE(file.exists(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk),".bed")))) { ## if ld set available check for position
+    pos<-which(ldbim$V2==rs) } else {
+    ORIGINALSUMSCORE<-ORIGINALSUMSCORE+riskscore
+    UPDOGSUMSCORE1a<-UPDOGSUMSCORE1a+riskscore
+    UPDOGSUMSCORE1b<-UPDOGSUMSCORE1b+riskscore
+    UPDOGSUMSCORE1c<-UPDOGSUMSCORE1c+riskscore
+    UPDOGSUMSCORE1d<-UPDOGSUMSCORE1d+riskscore
+    UPDOGSUMSCORE1e<-UPDOGSUMSCORE1e+riskscore
+    UPDOGSUMSCORE2a<-UPDOGSUMSCORE2a+riskscore
+    UPDOGSUMSCORE2b<-UPDOGSUMSCORE2b+riskscore
+    UPDOGSUMSCORE2c<-UPDOGSUMSCORE2c+riskscore
+    UPDOGSUMSCORE2d<-UPDOGSUMSCORE2d+riskscore
+    UPDOGSUMSCORE2e<-UPDOGSUMSCORE2e+riskscore
+    next
+  }
+
   if (length(pos) == 0) { ## checks lead variant available in ld data set, if not adds to running total and moves on to next variant
   ORIGINALSUMSCORE<-ORIGINALSUMSCORE+riskscore
   UPDOGSUMSCORE1a<-UPDOGSUMSCORE1a+riskscore
@@ -95,10 +113,12 @@ for (n in 1:(nrow(scores))) {
   suppressWarnings(ldbim$ld[start:stop]<-abs(cor(ld[,start:stop], ld[,pos])))
 
   ild<-0
-  for (i in (pos-1):(start)) { ## loop from 1 variant downstream to beginning of window 
-    if (ldbim[i,"ld"] > 0.5 && ldbim[i,"ld"] < 0.75 && (ldbim[i,2] %in% bim$V2) == TRUE && (ldbim[i,2] %in% sumstats$V1) == TRUE) {  ## Find first variant with an ld with lead of >0.5 and <0.75, and is available in the summary stats and test data
-      ild<-ldbim[i,"ld"]
-      break
+  if (pos != 1) { ## if no downstream variants from pos
+    for (i in (pos-1):(start)) { ## loop from 1 variant downstream to beginning of window 
+      if (ldbim[i,"ld"] > 0.5 && ldbim[i,"ld"] < 0.75 && (ldbim[i,2] %in% bim$V2) == TRUE && (ldbim[i,2] %in% sumstats$V1) == TRUE) {  ## Find first variant with an ld with lead of >0.5 and <0.75, and is available in the summary stats and test data
+        ild<-ldbim[i,"ld"]
+        break
+      }
     }
   }
 
