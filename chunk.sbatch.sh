@@ -10,6 +10,11 @@ module load "$rloc"
 start=$(head -n1 temp/chunkscores_"$outname"_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}) | awk '{print $2-250000}')
 stop=$(tail -n1 temp/chunkscores_"$outname"_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}) | awk '{print $2+250000}')
 
+if [ $start -lt 0 ]
+then
+  start=0
+fi
+
 ldarg="--${ldtype} ${ldloc}${i} --chr ${i} --from-bp $start --to-bp $stop --make-bed --out temp/ldref_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID})"
 testarg="--${testtype} ${testloc}${i} --chr ${i} --from-bp $start --to-bp $stop --make-bed --out temp/testdata_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID})"
 

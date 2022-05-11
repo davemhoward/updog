@@ -1,10 +1,10 @@
 # supplied arguments: $1=$testloc, $2=$testtype, $3=$ldloc, $4=$ldtype
-# $5=$sumstats, $6=$scores, $7=$plinkloc, $8=$rloc, $9=$outname, $10=sumstatsOR
+# $5=$sumstats, $6=$scores, $7=$plinkloc, $8=$rloc, $9=$outname, $10=sumstatsOR $11=jobargs
 
 args <- commandArgs(trailingOnly = TRUE)
 name <- args[9]
 
-outargs<-paste(args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10])
+outargs<-paste(args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11])
 
 setwd("temp")
 chunkname<-paste0("chunkscores_",name,"_chr*")
@@ -24,7 +24,7 @@ for (n in 1:(length(chunkfiles))) {
     }
     chr<-sapply(strsplit(sapply(strsplit(scores[n], "_chr"), "[[" , 2), "_"), "[[" , 1)
     chunk<-as.numeric(substr(scores[n],nchar(scores[n])-6,nchar(scores[n])-4))
-    cat(paste0("qsub -t ",chunk,"-",chunk," -l h_rt=8:00:00 -o logs/ -e logs/ -l h_vmem=32G -N updog_resubmit -cwd ./updog.qsub ",chr," ",outargs,"\n"))
+    cat(paste0("qsub -t ",chunk,"-",chunk," -l h_rt=8:00:00 -o logs/ -e logs/ ",args[11]," -l h_vmem=32G -N updog_resubmit -cwd ./chunk.qsub.sh ",chr," ",outargs,"\n"))
     sink()
 
     if (p == 1) {
@@ -32,8 +32,8 @@ for (n in 1:(length(chunkfiles))) {
     } else {
       sink(paste0("../resubmitjobs_",name,".sbatch"),append=TRUE)
     }
-    sbatchargs<-paste0("--export=i=",chr,",testloc=",args[1],",testtype=",args[2],",ldloc=",args[3],",ldtype=",args[4],",sumstats=",args[5],",scores=",args[6],",plinkloc=",args[7],",rloc=",args[8],",outname=",args[9],",sumstatsOR=",args[10])
-    cat(paste0("sbatch --array=",chunk,"-",chunk," --time=0-8:00:00 --output=logs/resubmit.chr",chr,".",chunk,".txt --mem=32G --job-name=updog_resubmit ",sbatchargs," ./updog.sbatch\n"))
+    sbatchargs<-paste0("--export=i=",chr,",testloc=",args[1],",testtype=",args[2],",ldloc=",args[3],",ldtype=",args[4],",sumstats=",args[5],",scores=",args[6],",plinkloc=",args[7],",rloc=",args[8],",outname=",args[9],",sumstatsOR=",args[10],",jobargs=",args[11])
+    cat(paste0("sbatch --array=",chunk,"-",chunk," --time=0-8:00:00 --output=logs/resubmit.chr",chr,".",chunk,".txt ",args[11]," --mem=32G --job-name=updog_resubmit ",sbatchargs," ./chunk.sbatch.sh\n"))
     sink()
 
   }
@@ -41,11 +41,12 @@ for (n in 1:(length(chunkfiles))) {
 
 if (p >= 1) {
   sink(paste0("../resubmitjobs_",name,".qsub"),append=TRUE)
-  cat(paste0("qsub -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid updog_resubmit ./merge_chunks.sh ",outargs,"\n"))
+  cat(paste0("qsub -l h_rt=4:00:00 -o logs/ -e logs/ ",args[11]," -l h_vmem=8G -N merge_chunks -cwd -hold_jid updog_resubmit ./merge_chunks.sh ",outargs,"\n"))
   sink()
 
   sink(paste0("../resubmitjobs_",name,".sbatch"),append=TRUE)
-  cat(paste0("qsub -l h_rt=4:00:00 -o logs/ -e logs/ -l h_vmem=8G -N merge_chunks -cwd -hold_jid updog_resubmit ./merge_chunks.sh ",outargs,"\n"))
+  mergeargs<-paste0("--export=testloc=",args[1],",testtype=",args[2],",ldloc=",args[3],",ldtype=",args[4],",sumstats=",args[5],",scores=",args[6],",plinkloc=",args[7],",rloc=",args[8],",outname=",args[9],",sumstatsOR=",args[10],",jobargs=",args[11])
+  cat(paste0("sbatch --time=0-8:00:00 --output=logs/resubmit_merge_chunks.txt ",args[11]," --mem=32G --job-name=updog_resubmit --dependency=singleton ",mergeargs," ./merge_chunks.sh\n"))
   sink()
 
   cat(paste0("  To rerun missing chunk(s) and attempt a remerge type ./resubmitjobs_",name,".qsub or ./resubmitjobs_",name,".sbatch on the command line depending on your job scheduler\n"))
