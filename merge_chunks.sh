@@ -9,13 +9,13 @@ module load "$rloc"
 Rscript merge_chunks.R ${testloc} ${testtype} ${ldloc} ${ldtype} ${sumstats} ${scores} ${plinkloc} ${rloc} ${outname} ${sumstatsOR} ${jobargs}
 
 ## if resubmitjobs file created then update to allow execute
-#if [ -e $(eval echo  resubmitjobs_${outname}.qsub) ]; then
+#if [ -e $(eval echo  resubmitjobs_${outname}) ]; then
 #  chmod 700 resubmitjobs_${outname}*
 #fi
 
-FILE=resubmitjobs_${outname}.qsub
+FILE=resubmitjobs_${outname}
 if test -f "$FILE"; then
-  chmod 700 resubmitjobs_${outname}*
+  chmod 700 resubmitjobs_${outname}
 fi
 
 
@@ -24,6 +24,7 @@ if [ -e $(eval echo genomewidescores_${outname}.txt) ]; then
   rm temp/chunkscores_${outname}_chr*
   rm temp/ldref_${outname}_chr*
   rm temp/scoreoutput_${outname}_chr*
+  rm temp/scores_${outname}_chr*
   rm temp/sumstats_${outname}_chr*
   rm temp/testdata_${outname}_chr*
 fi
