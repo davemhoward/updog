@@ -1,2 +1,2 @@
 # updog
-UP and DOwnstream Genetics coring
+UP and DOwnstream Genetic scoring
