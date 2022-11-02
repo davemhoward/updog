@@ -1,2 +1,2 @@
 # updog
-UPandDOwnstreamGeneticscoring
+UP and DOwnstream Genetics coring
