@@ -10,9 +10,9 @@ updog requires R version ≥ 3.0.2. R is required to be set up as an environment
 
 updog requires 4 sources of data:
 1. Test data. This is the genetic dataset you want to make prediction in to. This data is required to be split by chromosome and in bfile, pfile or vcf format.
-2. Linkage Disequilibrium (ld) reference data matching the ancestry of the summary stats (typically the 1000 genomes or the HRC reference data panels. This data is required to be split by chromosome and in bfile, pfile or vcf format.
-3. The genome-wide summary statistics file
-4. The genome-wide genetic scores for making predictions (typically created from passing the summary statistics file to packages such as PRS-CS or GCTB, or by using P-value thresholding and clumping)
+2. Linkage Disequilibrium (ld) reference data. This has to match the ancestry of the summary stats (typically the 1000 genomes or the HRC reference data panels. This data is required to be split by chromosome and in bfile, pfile or vcf format.
+3. Genome-wide summary statistics
+4. Genome-wide genetic scores for making predictions (typically created from passing the summary statistics file to packages such as PRS-CS or GCTB, or by using *P*-value thresholding and clumping)
 
 
 ## Getting Started
@@ -22,20 +22,25 @@ Clone this repository using the following git command:
 git clone https://github.com/davemhoward/updog.git
 ```
 
-  To run updog type ./updog and supply the following flags and arguments
+To run updog type 
+```
+./updog
+```
+and supply the following flags and arguments
 
-  -t [location of test data]
-     Data should be split by chromosome. Chromosome number should be the last
-     part of the filename prefix and omitted along with the file type. So if the
-     full filename was UK_biobank_chr1.vcf then supply -t UK_biobank_chr
-  -u [filetype of test data]
-     e.g. -u bfile, -u pfile, or -u vcf
-  -l <location of ld reference data for summary statistics>
-     Data should be split by chromosome, chromosome number should be the last
-     part of the filename prefix and omitted along with the file type. So if the
-     full file name was 1000g_eur_chr1.vcf then type -t 1000g_eur_chr
-  -m <filetype of ld reference for summary statistics>
-     e.g. -m bfile, -m pfile, or -m vcf
+-t [location of test data]
+
+Test data should be split by chromosome. Chromosome number should be the last part of the filename prefix and omitted along with the file type. So if the full filename was UK_biobank_chr1.vcf then type `-t UK_biobank_chr`
+
+-u [filetype of test data] `-u bfile, -u pfile, or -u vcf`
+
+-l [location of ld reference data for summary statistics]
+
+LD reference data should be split by chromosome, chromosome number should be the last part of the filename prefix and omitted along with the file type. So if the full file name was 1000g_eur_chr1.vcf then type `-t 1000g_eur_chr`
+
+-m [filetype of ld reference data for summary statistics] `-m bfile, -m pfile, or -m vcf`
+
+
   -s <location of summary statistics> {optional flag -n}
      File should be genome-wide, space separated, with a header row. The first 4
      columns must contain SNP Name, A1 allele, A2 allele, Effect Size. The -n
