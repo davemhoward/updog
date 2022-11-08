@@ -1,6 +1,6 @@
 # updog - UP and DOwnstream Genetic scoring
 
-# Requirements:
+## Requirements
 
 The code is currently written for a high performance cluster running linux and using a Slurm job scheduler. If you are running Sun Grid Engine or something similar for job scheduling please reach out (David.Howard@kcl.ac.uk) and I can help set up UPDOG for your system.
 
@@ -13,6 +13,14 @@ updog requires 4 sources of data:
 2. Linkage Disequilibrium (ld) reference data matching the ancestry of the summary stats (typically the 1000 genomes or the HRC reference data panels. This data is required to be split by chromosome and in bfile, pfile or vcf format.
 3. The genome-wide summary statistics file
 4. The genome-wide genetic scores for making predictions (typically created from passing the summary statistics file to packages such as PRS-CS or GCTB, or by using P-value thresholding and clumping)
+
+
+## Getting Started
+
+Clone this repository using the following git command:
+```
+git clone https://github.com/davemhoward/updog.git
+```
 
   To run updog type ./updog and supply the following flags and arguments
 
