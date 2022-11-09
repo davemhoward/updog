@@ -125,6 +125,8 @@ updog creates a log directory and will store additional output in there
 
 ## Support
 
-
+Please send any questions about updog to: [David.Howard@kcl.ac.uk](mailto:David.Howard@kcl.ac.uk)
 
 ## Citation
+
+Citation will appear here in due course
