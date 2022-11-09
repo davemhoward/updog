@@ -4,9 +4,9 @@
 
 The code is currently written for a high performance cluster running linux and using a Slurm job scheduler. If you are running Sun Grid Engine or something similar for job scheduling please reach out (David.Howard@kcl.ac.uk) and I can help set up UPDOG for your system.
 
-updog requires PLINK version ≥ v1.07. The PLINK version needs to be able to read in the format of your data (bfile, pfile, or vcf). PLINK is required to be set up as an environmental variable which is called using $module load
+updog requires PLINK version ≥ v1.07. The PLINK version needs to be able to read in the format of your data (bfile, pfile, or vcf). PLINK is required to be set up as an environmental variable (i.e. called using $module load)
 
-updog requires R version ≥ 3.0.2. R is required to be set up as an environmental variable which is called using $module load
+updog requires R version ≥ 3.0.2. R is required to be set up as an environmental variable (i.e. called using $module load)
 
 updog requires 4 sources of data:
 1. Test data. This is the genetic dataset you want to make prediction in to. This data is required to be split by chromosome and in bfile, pfile or vcf format.
@@ -69,13 +69,17 @@ and supply the following flags and arguments
 
 Chromosome number should be the last part of the filename prefix and omitted along with the file type. So if the full filename was UK_biobank_chr1.vcf then use `-t UK_biobank_chr`
 
--u [filetype of test data] `-u bfile, -u pfile, or -u vcf`
+-u [filetype of test data]
+
+i.e. `-u bfile`, `-u pfile`, or `-u vcf`
 
 -l [location of ld reference data for summary statistics]
 
 Chromosome number should be the last part of the filename prefix and omitted along with the file type. So if the full file name was 1000g_eur_chr1.vcf then use `-t 1000g_eur_chr`
 
--m [filetype of ld reference data for summary statistics] `-m bfile, -m pfile, or -m vcf`
+-m [filetype of ld reference data for summary statistics]
+
+i.e. `-m bfile`, `-m pfile`, or `-m vcf`
 
 -s [location of summary statistics] {optional flag -n}
 
