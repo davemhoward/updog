@@ -123,9 +123,9 @@ This flag is optional and can be used to provide the scheduler with any addition
 
 Once updog has completed there should be a results file called genomewidescores_[name for output].txt in the directory. This will be a four column file with the family id, individual id, and phenotype from the test data in the first three columns. The fourth column contains the updog calculated risk score for each individual.
 
-updog cuts the genome in to chunks and if any chunks fail to complete there will be a file called resubmitjobs_[name for output] in the directory. If this is produced, enter `./resubmitjobs_[name for output]` on the command line.
+updog cuts the genome in to chunks and if any chunks fail to complete there will be a file called resubmitjobs_[name for output] in the directory. If this file is produced, enter `./resubmitjobs_[name for output]` on the command line.
 
-updog creates a log directory and will store additional output in there
+updog creates a log directory and will store additional output in there.
 
 ## Support
 
@@ -133,7 +133,7 @@ Please send any questions about updog to: [David.Howard@kcl.ac.uk](mailto:David.
 
 ## Citation
 
-Citation will appear here in due course
+Citation will appear here
 
 ## Code structure
 
