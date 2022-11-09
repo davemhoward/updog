@@ -91,7 +91,7 @@ So if you'd normally enter `module load plink/1.9` on the command line use `-p p
 
 -r [location of R environment module]
 
-So if you'd normally enter `module load r/4.1.1` on the command line use `-r 4/4.1.1`
+So if you'd normally enter `module load r/4.1.1` on the command line use `-r r/4.1.1`
 
 -a "[any additional scheduler requirements]"
 
