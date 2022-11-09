@@ -50,7 +50,7 @@ usage() {
   echo "  -r [location of R environment module]"; \
   echo "     So if you use module load r/4.1.1 on the command line use -r r/4.1.1"; \
   echo "     Use R version ≥ 3.0.2"; \
-  echo "  -a "[any additional scheduler requirements]"; \
+  echo "  -a \"[any additional scheduler requirements]\""; \
   echo "    The -a flag is optional and can be used to provide the scheduler with any"; \
   echo "    additional information such as for placing jobs on a particular partition"; \
   echo "    or for accounting purposes. updog already requests runtime and memory and"; \
