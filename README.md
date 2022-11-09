@@ -59,6 +59,8 @@ Clone this repository using the following git command:
 git clone https://github.com/davemhoward/updog.git
 ```
 
+You may need up update file permissions to be executable using `chmod 770 *`
+
 To run updog type 
 ```
 ./updog
