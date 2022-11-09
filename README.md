@@ -15,8 +15,8 @@ updog requires 4 sources of data:
 
 ```
 SNP A1 A2 beta
-rs1000000 A G -0.0079
-rs1000002 T C -0.046
+rs1000000 A G 0.0179
+rs1000002 T C -0.0460
 rs10000037 A G -0.0049
 ...
 ```
@@ -24,10 +24,10 @@ rs10000037 A G -0.0049
 or
 
 ```
-SNP A1 A2 BETA
-rs1000000 A G -0.0079
-rs1000002 T C -0.046
-rs10000037 A G -0.0049
+SNP A1 A2 OR
+rs1000000 A G 1.0181
+rs1000002 T C 0.9550
+rs10000037 A G 0.9951
 ...
 ```
 
@@ -37,7 +37,7 @@ rs10000037 A G -0.0049
 Chr BP SNP A1 A2 beta
 5 124252658 rs10041789 A G 0.0262
 8 61718717 rs10103011 T C 0.0298
-14 104017953 rs10149470 A G -0.028
+14 104017953 rs10149470 A G -0.0280
 ...
 ```
 
@@ -45,9 +45,9 @@ or
 
 ```
 Chr BP SNP A1 A2 OR
-5 124252658 rs10041789 A G 0.0262
-8 61718717 rs10103011 T C 0.0298
-14 104017953 rs10149470 A G -0.028
+5 124252658 rs10041789 A G 1.0265
+8 61718717 rs10103011 T C 1.0302
+14 104017953 rs10149470 A G 0.9724
 ...
 ```
 
@@ -82,16 +82,17 @@ Chromosome number should be the last part of the filename prefix and omitted alo
 The optional -n flag indicates that effect sizes are odds ratios else beta coefficients are assumed.
 
 -g [location of genetic scores] {optional flag -i}
-     File should be genome-wide, space separated, with a header row. The first 6
-     columns must contain chromosome number, basepair position, SNP Name, A1
-     allele, A2 allele, Genetic Score. The -i flag indicates that genetic scores
-     are odds ratios else beta coefficients are assumed. The header row is
-     ignored along with any additional columns
-  -p <location of plink environment module>
-     i.e. what you enter after entering module load on the command line
-  -r <location of R environment module>
-     i.e. what you enter after entering module load on the command line
-     Use R version ≥ 3.0.2
-  -o <name for output>
+
+The -i flag indicates that genetic scores are odds ratios else beta coefficients are assumed. 
+
+-p [location of plink environment module]
+
+So if you'd normally enter `module load plink/1.9` on the command line use `-p plink/1.9`
+
+-r [location of R environment module]
+
+So if you'd normally enter `module load r/4.1.1` on the command line use `-r 4/4.1.1`
+ 
+-o [name for output]
 
 
