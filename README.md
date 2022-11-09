@@ -8,7 +8,7 @@ updog requires PLINK version ≥ v1.07. The PLINK version needs to be able to re
 
 updog requires R version ≥ 3.0.2. R is required to be set up as an environmental variable (i.e. called using $module load)
 
-updog requires 4 sources of data:
+updog requires 4 sources of data that have already undergone quality control:
 1. Test data. This is the genetic dataset you want to make prediction in to. This data is required to be split by chromosome and in bfile, pfile or vcf format.
 2. Linkage Disequilibrium (ld) reference data. This has to match the ancestry of the summary stats (typically the 1000 genomes or the HRC reference data panels. This data is required to be split by chromosome and in bfile, pfile or vcf format.
 3. Genome-wide summary statistics. The summary statistics file should be genome-wide, space separated, with a header row. The first 4 columns must contain SNP Name, A1 allele, A2 allele, Effect Size. The header row is ignored along with any additional columns. The summary statistics file must use either of the following formats:
