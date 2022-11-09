@@ -92,7 +92,25 @@ So if you'd normally enter `module load plink/1.9` on the command line use `-p p
 -r [location of R environment module]
 
 So if you'd normally enter `module load r/4.1.1` on the command line use `-r 4/4.1.1`
+
+-a "[any additional scheduler requirements]"
+
+This flag is optional and can be used to provide the scheduler with any additional information such as for placing jobs on a particular partition or for accounting purposes. updog already requests runtime and memory and so these do not need to be requested.
  
 -o [name for output]
 
+## Example code updog
 
+```
+./updog \
+-t ~/scratch/UK_biobank_chr \
+-u bfile \
+-l ~/scatch/1000g_eur_chr \
+-m vcf \
+-s DepressionSummaryStatistics.txt \
+-g LeadVariantsExtractedfromSummaryStatistics.txt \
+-p plink/1.9 \
+-r r/4.1.1 \
+-a "--partition=cpu" \
+-o PredictionOfDepressionInUKBiobank
+```
