@@ -10,10 +10,10 @@ echo "             |_|     v1.0    (_____| "
 echo ""
 
 usage() { 
-  echo "  updog requires 4 sources of data:"; \
+  echo "  updog requires 4 sources of QCd data:"; \
   echo "  1. Test data. This is the genetic dataset you want to make prediction in to"; \
   echo "  2. Linkage Disequilibrium (ld) reference data matching the ancestry of the"; \
-  echo "     summary stats (typically the 1000 genomes or the HRC reference data panels"; \
+  echo "     summary stats (typically the 1000 genomes or the HRC reference data panels)"; \
   echo "  3. The genome-wide summary statistics file"; \
   echo "  4. The genome-wide genetic scores for making predictions (typically created"; \
   echo "     from passing the summary statistics file to packages such as PRS-CS or GCTB,"; \
@@ -26,30 +26,39 @@ usage() {
   echo "     part of the filename prefix and omitted along with the file type. So if the"; \
   echo "     full filename was UK_biobank_chr1.vcf then supply -t UK_biobank_chr"; \
   echo "  -u [filetype of test data]"; \
-  echo "     e.g. -u bfile, -u pfile, or -u vcf"; \
-  echo "  -l <location of ld reference data for summary statistics>"; \
+  echo "     i.e. -u bfile, -u pfile, or -u vcf"; \
+  echo "  -l [location of ld reference data for summary statistics]"; \
   echo "     Data should be split by chromosome, chromosome number should be the last"; \
   echo "     part of the filename prefix and omitted along with the file type. So if the"; \
   echo "     full file name was 1000g_eur_chr1.vcf then type -t 1000g_eur_chr"; \
-  echo "  -m <filetype of ld reference for summary statistics>"; \
-  echo "     e.g. -m bfile, -m pfile, or -m vcf"; \
-  echo "  -s <location of summary statistics> {optional flag -n}"; \
+  echo "  -m [filetype of ld reference for summary statistics]"; \
+  echo "     i.e. -m bfile, -m pfile, or -m vcf"; \
+  echo "  -s [location of summary statistics] {optional flag -n}"; \
   echo "     File should be genome-wide, space separated, with a header row. The first 4"; \
   echo "     columns must contain SNP Name, A1 allele, A2 allele, Effect Size. The -n"; \
   echo "     flag indicates that effect sizes are odds ratios else beta coefficients are"; \
   echo "     assumed. The header row is ignored along with any additional columns."; \
-  echo "  -g <location of genetic scores> {optional flag -i}"; \
+  echo "  -g [location of genetic scores] {optional flag -i}"; \
   echo "     File should be genome-wide, space separated, with a header row. The first 6"; \
   echo "     columns must contain chromosome number, basepair position, SNP Name, A1"; \
   echo "     allele, A2 allele, Genetic Score. The -i flag indicates that genetic scores"; \
   echo "     are odds ratios else beta coefficients are assumed. The header row is"; \
   echo "     ignored along with any additional columns"; \
-  echo "  -p <location of plink environment module>"; \
-  echo "     i.e. what you enter after entering module load on the command line"; \
-  echo "  -r <location of R environment module>"; \
-  echo "     i.e. what you enter after entering module load on the command line"; \
+  echo "  -p [location of PLINK environment module]"; \
+  echo "     So if you use module load plink/1.9 on the command line use -p plink/1.9"; \
+  echo "     Use PLINK version ≥ v1.07"; \
+  echo "  -r [location of R environment module]"; \
+  echo "     So if you use module load r/4.1.1 on the command line use -r r/4.1.1"; \
   echo "     Use R version ≥ 3.0.2"; \
-  echo "  -o <name for output>"; }
+  echo "  -a "[any additional scheduler requirements]"; \
+  echo "    The -a flag is optional and can be used to provide the scheduler with any"; \
+  echo "    additional information such as for placing jobs on a particular partition"; \
+  echo "    or for accounting purposes. updog already requests runtime and memory and"; \
+  echo "    so these do not need to be requested."; \
+  echo "  -o [name for output]"; \
+  echo ""; \
+  echo "see https://github.com/davemhoward/updog for full guide"; \
+  echo ""; }
 
 sumstatsOR=0
 scoresOR=0
