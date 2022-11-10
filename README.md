@@ -77,7 +77,7 @@ i.e. `-u bfile`, `-u pfile`, or `-u vcf`
 
 -l [location of ld reference data for summary statistics]
 
-Chromosome number should be the last part of the filename prefix and omitted along with the file type. So if the full file name was 1000g_eur_chr1.vcf then use `-t 1000g_eur_chr`
+Chromosome number should be the last part of the filename prefix and omitted along with the file type. So if the full file name was 1000g_eur_chr1.vcf then use `-l 1000g_eur_chr`
 
 -m [filetype of ld reference data for summary statistics]
 
