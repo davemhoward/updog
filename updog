@@ -240,7 +240,7 @@ fi
 echo ""
 
 if [ -e $(eval echo ${sumstats}) ]; then
-  echo "  Summary statistics found for $(cat ${sumstats} | tail -n +2 | wc -l) variants with a mean effect size of $(awk '{ total += $4 } END { print total/NR }' $sumstats)"
+  echo "  Summary statistics found for $(cat ${sumstats} | tail -n +2 | wc -l) variants with a mean effect size of $(awk '{ total += $4 } END { print total/(NR-1) }' $sumstats)"
   if [ "$sumstatsOR" -eq 1 ]; then
     echo "  Odds ratio flag detected for effect sizes - converting by taking the natural log"
   fi
@@ -251,7 +251,7 @@ fi
 echo ""
 
 if [  -e $(eval echo ${scores}) ]; then
-  echo "  Genetic scores found for $(cat ${scores} | tail -n +2 | wc -l) variants with a mean genetic score of $(awk '{ total += $6 } END { print total/NR }' $scores)"
+  echo "  Genetic scores found for $(cat ${scores} | tail -n +2 | wc -l) variants with a mean genetic score of $(awk '{ total += $6 } END { print total/(NR-1) }' $scores)"
   if [ "$scoresOR" -eq 1 ]; then
     echo "  Odds ratio flag detected for genetic scores - converting by taking the natural log"
   fi
