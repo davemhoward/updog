@@ -21,7 +21,7 @@ testarg="--${testtype} ${testloc}${i} --chr ${i} --from-bp $start --to-bp $stop 
 echo ""
 echo "  Chunking ld reference data"
 echo ""
-if grep -q "plink/2" <<< "$plinkloc"; then ## chunk ldref and test date using plink 2
+if grep -q "[2]" <<< "$plinkloc"; then ## chunk ldref and test date using plink 2
   plink2 $ldarg
   echo ""
   echo "  Chunking test data"
