@@ -119,6 +119,7 @@ This flag is optional and can be used to provide the scheduler with any addition
 -m vcf \
 -s DepressionSummaryStatistics.txt \
 -g LeadVariantsExtractedfromSummaryStatistics.txt \
+-w 0.025 \
 -p plink/1.9 \
 -r r/4.1.1 \
 -a "--partition=cpu" \
