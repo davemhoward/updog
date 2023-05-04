@@ -115,7 +115,7 @@ This flag is optional and can be used to provide the scheduler with any addition
 ./updog \
 -t ~/scratch/UK_biobank_chr \
 -u bfile \
--l ~/scatch/1000g_eur_chr \
+-l ~/scratch/1000g_eur_chr \
 -m vcf \
 -s DepressionSummaryStatistics.txt \
 -g LeadVariantsExtractedfromSummaryStatistics.txt \
