@@ -91,6 +91,10 @@ The optional -n flag indicates that effect sizes are odds ratios else beta coeff
 
 The -i flag indicates that genetic scores are odds ratios else beta coefficients are assumed. 
 
+-w [scaling factor]
+
+The -w flag is optional and if omitted a default value of 0.025 is used
+
 -p [location of plink environment module]
 
 So if you'd normally enter `module load plink/1.9` on the command line use `-p plink/1.9`
