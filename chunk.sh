@@ -2,7 +2,7 @@
 
 # $i $testloc $testtype $ldloc $ldtype $sumstats $scores $plinkloc $rloc $outname $sumstatsOR
 # supplied arguments: $i = chr, $2 $testloc, $3=$testtype, $4=$ldloc, $5=$ldtype
-# $6=$sumstats, $7=$scores, $8=$plinkloc, $9=$rloc, $10=$outname, $11=sumstatsOR
+# $6=$sumstats, $7=$scores, $8=$plinkloc, $9=$rloc, $10=$outname, $11=sumstatsOR, $12=weighting
 
 module load "$plinkloc"
 module load "$rloc"
@@ -27,7 +27,7 @@ if grep -q "[2]" <<< "$plinkloc"; then ## chunk ldref and test date using plink 
   echo "  Chunking test data"
   echo ""
   plink2 $testarg
-else ## chunk ldref and test data using plink
+else ## chunk ldref and test date using plink
   plink $ldarg
   echo ""
   echo "  Chunking test data"
@@ -52,7 +52,7 @@ fi
 
 ## pass chunk to updog.R if testdata available else remove chunkscore file to enable successful merge
 if [ -f "$testbim" ]; then
-  Rscript updog.R ${i} ${SLURM_ARRAY_TASK_ID} ${outname}
+  Rscript updog.R ${i} ${SLURM_ARRAY_TASK_ID} ${outname} ${weighting}
 else
   rm temp/chunkscores_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID})
 fi
