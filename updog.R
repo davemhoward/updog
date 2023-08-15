@@ -180,7 +180,7 @@ for (n in 1:(nrow(scores))) {
 }
 
 output<-cbind(fam[,c(1,2,6)],COUNT,UPDOGSUMSCORE2)
-colnames(output)[1:4]<-c("FID","ID","PHENO","UPDOGSUMSCORE")
+colnames(output)[1:4]<-c("FID","ID","PHENO","COUNT","UPDOGSUMSCORE")
 
 ## write out risk score
 write.table(output,paste0("temp/scoreoutput_",name,"_chr",chr,"_",sprintf("%03d",chunk),".txt"),col.names=T,row.names=F,quote=FALSE)
