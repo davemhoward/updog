@@ -315,9 +315,9 @@ fi
 echo ""
 
 if [ -z "${weighting}" ]; then
-  echo "  Using the default scaling factor of 0.025"
-  echo "Using the default scaling factor of 0.025" >> logs/${outname}.txt
-  weighting=0.025
+  echo "  Using the default scaling factor of 0.0125"
+  echo "Using the default scaling factor of 0.0125" >> logs/${outname}.txt
+  weighting=0.0125
 else
   echo "  Using a scaling factor of ${weighting}"
   echo "Using a scaling factor of ${weighting}" >> logs/${outname}.txt
