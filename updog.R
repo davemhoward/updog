@@ -37,6 +37,8 @@ riskscoredown2<-structure(1:(nrow(geno)), names=rownames(geno))
 riskscoreup2<-structure(1:(nrow(geno)), names=rownames(geno))
 riskscoredown2<-0
 riskscoreup2<-0
+COUNT<-seq(1:(nrow(geno)))
+COUNT[!is.na(COUNT)] <- 0
 
 for (n in 1:(nrow(scores))) {
 
@@ -47,6 +49,7 @@ for (n in 1:(nrow(scores))) {
   if (scores$V6[n] == 0) { ## if beta is zero skip to next variant
   next
   } else {
+  COUNT<-COUNT+1
   beta<-scores$V6[n]
   }
   ## check whether A1 allele in test data matches scores A1 and A2 matches A2
@@ -176,7 +179,7 @@ for (n in 1:(nrow(scores))) {
 
 }
 
-output<-cbind(fam[,c(1,2,6)],UPDOGSUMSCORE2)
+output<-cbind(fam[,c(1,2,6)],COUNT,UPDOGSUMSCORE2)
 colnames(output)[1:4]<-c("FID","ID","PHENO","UPDOGSUMSCORE")
 
 ## write out risk score
