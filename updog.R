@@ -21,7 +21,7 @@ if(isTRUE(file.exists(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",ch
   ldbim<-read.table(paste0("temp/ldref_",name,"_chr",chr,"_",sprintf("%03d",chunk),".bim"),header=F,sep="",stringsAsFactors=F,colClasses = c("integer","character","integer","integer","character","character"))
   ldbim$ld<-0
 }
-window<-250000 ## set window to 250kb
+window<-500000 ## set window to 250kb
 
 ## Pull in chunked summary statistics
 sumstats<-read.table(paste0("temp/sumstats_",name,"_chr",chr,"_",sprintf("%03d",chunk),".txt"),header=F,sep="",stringsAsFactors=F,colClasses = c("character","character","character","numeric"))
