@@ -40,14 +40,21 @@ echo ""
 ## if sumstats contain OR then convert using natural log
 
 testbim=temp/testdata_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).bim
+chunksum=temp/sumstats_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).txt
 if [ -f "$testbim" ]; then
   if [ "${sumstatsOR}" -eq 1 ]; then
     awk 'NR==FNR {FILE1[$2]=$0; next} ($1 in FILE1) {print $0}' \
-    temp/testdata_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).bim ${sumstats} | awk '{print $1,$2,$3,log($4)}' > temp/sumstats_${outname}_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).txt
+    temp/testdata_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).bim ${sumstats} | awk '{print $1,$2,$3,log($4)}' > ${chunksum}
   else
     awk 'NR==FNR {FILE1[$2]=$0; next} ($1 in FILE1) {print $0}' \
-    temp/testdata_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).bim ${sumstats} > temp/sumstats_${outname}_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).txt
+    temp/testdata_${outname}_chr${i}_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}).bim ${sumstats} > ${chunksum}
   fi
+fi
+
+## if chunked summary stats are empty then remove testbim
+lensumstats=$(wc -l < ${chunksum})
+if [ "${lensumstats}" -eq 0 ]; then
+  rm "$testbim"
 fi
 
 ## pass chunk to updog.R if testdata available else remove chunkscore file to enable successful merge
