@@ -7,8 +7,8 @@
 module load "$plinkloc"
 module load "$rloc"
 
-start=$(head -n1 temp/chunkscores_"$outname"_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}) | awk '{print $2-250000}')
-stop=$(tail -n1 temp/chunkscores_"$outname"_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}) | awk '{print $2+250000}')
+start=$(head -n1 temp/chunkscores_"$outname"_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}) | awk '{print $2-500000}')
+stop=$(tail -n1 temp/chunkscores_"$outname"_chr"$i"_$(printf "%03d" ${SLURM_ARRAY_TASK_ID}) | awk '{print $2+500000}')
 
 if [ $start -lt 0 ]
 then
