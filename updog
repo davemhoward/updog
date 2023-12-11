@@ -45,7 +45,7 @@ usage() {
   echo "     are odds ratios else beta coefficients are assumed. The header row is"; \
   echo "     ignored along with any additional columns"; \
   echo "  -w [scaling factor]"; \
-  echo "     The -w flag is optional and if omitted a default value of 0.025 is used"; \
+  echo "     The -w flag is optional and if omitted a default value of 0.0125 is used"; \
   echo "  -p [location of plink environment module]"; \
   echo "     So if you use module load plink/1.9 on the command line use -p plink/1.9"; \
   echo "     Use PLINK version ≥ v1.07"; \
